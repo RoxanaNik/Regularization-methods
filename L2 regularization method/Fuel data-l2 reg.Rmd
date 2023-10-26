@@ -1,0 +1,201 @@
+---
+title: "Fuel data-l2 reg"
+author: "Roxana Niksefat"
+date: '2023-10-11'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# loading the packages that are needed
+
+```{python}
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
+import matplotlib.pyplot as plt
+```
+
+# loading the dataset
+
+```{python}
+csv_file = 'fuel.csv'
+
+data = pd.read_csv(csv_file)
+```
+
+
+```{python}
+X = data.iloc[:, [0,1,3,5,6,7,9,10,12]]
+y = data['VarValveLift']
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 885)
+X_train = np.asarray(X_train).astype(np.float32)
+y_train = np.asarray(y_train).astype(np.float32)
+
+```
+
+
+```{python}
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 885)
+```
+
+
+# Standardize
+
+```{python}
+# Standardize features (optional but often recommended)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+X_train = np.asarray(X_train).astype(np.float32)
+y_train = np.asarray(y_train).astype(np.float32)
+```
+
+# modeling and adding layers(1inout,2hidden,1output)
+
+```{python}
+# Create a sequential model
+model = keras.Sequential()
+```
+
+
+```{python}
+# Add an input layer with 4 neurons (input features)
+model.add(layers.Input(shape=(9,)))
+```
+
+
+```{python}
+# Adjust the regularization strength (0.01)
+# Add a hidden layer with 70 neurons and 'relu' activation function
+model.add(layers.Dense(10, kernel_regularizer=keras.regularizers.l2(0.01), activation='relu'))
+
+
+# Add a hidden layer with 55 neurons and 'relu' activation function
+model.add(layers.Dense(10, kernel_regularizer=keras.regularizers.l2(0.01), activation='relu'))
+```
+
+
+```{python}
+# Add an output layer with 3 neurons (for 3 classes) and 'softmax' activation function
+model.add(layers.Dense(2, activation='softmax'))
+```
+
+# Compile the model
+
+This step prepares the model for training.
+
+```{python}
+# Compile the model with an optimizer, loss function, and metric(s)
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+```
+
+# training model
+
+```{python}
+# Train the model
+#batch is the number of samples
+#epochs is the number of times the model runs
+# verbose:It is used to set the logging level during the model training and validation process. The verbose argument can take one of three integer values: 0, 1, or 2. verbose=0 : Displays no logs. verbose=1 : Displays progress bar with logs (default). verbose=2 : Displays one line per epoch
+
+model.fit(X_train, y_train, epochs=10, batch_size=16, verbose=1)
+```
+# Evaluate the model
+performance is evaluated on the test data using accuracy.
+
+```{python}
+# Evaluate the model on the test data
+loss, accuracy = model.evaluate(X_test, y_test)
+print(f'Test loss: {loss:.4f}, Test accuracy: {accuracy:.4f}')
+```
+
+# prediction
+
+```{python}
+# Make predictions on new data
+predictions = model.predict(X_test)
+predicted_classes = np.argmax(predictions, axis=1)
+```
+
+
+```{python}
+# Make predictions on the test set using your trained model
+y_pred = model.predict(X_test)
+```
+```{python}
+predictions = model.predict(X_test)
+## 1/7 [===>..........................] - ETA: 0s7/7 [==============================] - 0s 739us/step
+predicted_classes = np.argmax(predictions, axis=1)
+# Make predictions on the test set using your trained model
+```
+
+
+```{python}
+y_pred = model.predict(X_test)
+loss, accuracy = model.evaluate(X, y)
+```
+```{python}
+history = model.fit(X_train, y_train, epochs=30, batch_size=5)
+```
+
+```{python}
+training_loss = history.history['loss']
+validation_loss = history.history['val_loss']
+plt.plot(range(1, len(training_loss) + 1), training_loss, label='Training Loss')
+plt.plot(range(1, len(validation_loss) + 1), validation_loss, label='Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss (MAE)')
+plt.title('Training and Validation Loss Over Epochs')
+plt.legend()
+plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{python}
+# Calculate a classification report
+report = classification_report(y_test, y_pred)
+```
+
+
+```{python}
+# Print the classification report
+print(report)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

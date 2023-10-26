@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-In this code, L2 regularization is applied to the weights of the hidden layers using the kernel_regularizer argument when adding layers. You can adjust the regularization strength by changing the value (0.01 in this example) to control how much penalty is applied to the weights. L2 regularization helps prevent overfitting by encouraging smaller weight values
+In this code, L2 regularization is applied to the weights of the hidden layers using the kernel_regularizer argument when adding layers. You can adjust the regularization strength by changing the value (0.01 in this example) to control how much penalty is applied to the weights. L2 regularization helps prevent overfitting by encouraging smaller weight values.   
 
 ```{python}
 import numpy as np
